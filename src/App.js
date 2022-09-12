@@ -1,33 +1,37 @@
-import React, {useState} from 'react';
-import { Button, Container, CssBaseline, Paper, TextField, Typography } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Button, ButtonGroup, Container, CssBaseline, Divider, IconButton, Paper, TextField, Typography } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+
+const DEFAULT_MEMBERS = [
+  '교수님',
+  '히섭',
+  '시트',
+  '휘바',
+  '달부',
+  '널',
+  '님니',
+  '고구마',
+  '껄룩',
+  '싸제',
+  '섬총각',
+  '부먹',
+  '린려',
+  '산책',
+  '왼손',
+  '리즈웰',
+  '로놀푸',
+  '서강보살',
+  '톤다운',
+  '큰큰곰',
+];
 
 function App() {
   const [memberInput, setMemberInput] = useState('');
-  const [members, setMembers] = useState([
-    '교수님',
-    '히섭',
-    '시트',
-    '휘바',
-    '달부',
-    '널',
-    '님니',
-    '고구마',
-    '껄룩',
-    '싸제',
-    '섬총각',
-    '부먹',
-    '린려',
-    '산책',
-    '왼손',
-    '리즈웰',
-    '로놀푸',
-    '서강보살',
-    '톤다운',
-    '큰큰곰',
-  ]);
+  const [members, setMembers] = useState([]);
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [teamRedMembers, setTeamRedMembers] = useState([]);
   const [teamBlueMembers, setTeamBlueMembers] = useState([]);
+  const [editMode, setEditMode] = useState(false);
 
   const onClickMember = (member) => {
     if (selectedMembers.length >= 10) { return; }
@@ -59,7 +63,26 @@ function App() {
     newMembers.push(member);
     setMembers(newMembers);
     setMemberInput('');
+    localStorage.setItem('members', JSON.stringify(newMembers));
   }
+
+  const removeMember = (member) => {
+    const newMembers = JSON.parse(JSON.stringify(members));
+    const index = newMembers.indexOf(member);
+    newMembers.splice(index, 1);
+    setMembers(newMembers);
+    localStorage.setItem('members', JSON.stringify(newMembers));
+  }
+
+  useEffect(() => {
+    let storedMembers = localStorage.getItem('members');
+    if (storedMembers === null) {
+      localStorage.setItem('members', JSON.stringify(DEFAULT_MEMBERS));
+    }
+    storedMembers = JSON.parse(localStorage.getItem('members'));
+    console.log(storedMembers);
+    setMembers(storedMembers);
+  }, []);
   
   return (
     <>
@@ -93,21 +116,58 @@ function App() {
               추가
             </Button>
           </div>
+          <Divider style={{ marginTop: 10, marginBottom: 10 }} />
           <div style={{ marginTop: 10 }}>
-          {
-            members.map((member) => (
+            <div style={{ display: 'flex', alignItems: 'center', marginLeft: 10, fontSize: 18, fontWeight: 700 }}>
+              <Typography>전체 멤버</Typography>
               <Button
                 variant="contained"
-                color={selectedMembers.indexOf(member) >= 0 ? "secondary" : "primary"}
-                style={{ margin: 5 }}
-                onClick={() => onClickMember(member)}
+                style={{ marginLeft: 10 }}
+                onClick={() => setEditMode(!editMode)}
               >
-                {member}
+                수정
               </Button>
-            ))
-          }
+            </div>
+            <Divider style={{ margin: 10, marginLeft: 5, marginRight: 5 }} />
+            {
+              members.map((member) => (
+                <ButtonGroup
+                  variant="contained"
+                  style={{ margin: 5 }}
+                >
+                  <Button
+                    color={selectedMembers.indexOf(member) >= 0 ? "secondary" : "primary"}
+                    onClick={() => onClickMember(member)}
+                  >
+                    {member}
+                  </Button>
+                  {
+                    editMode && (
+                      <IconButton
+                        color={selectedMembers.indexOf(member) >= 0 ? "secondary" : "primary"}
+                        onClick={() => removeMember(member)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )
+                  }
+                </ButtonGroup>
+              ))
+            }
           </div>
+          <Divider style={{ marginTop: 10, marginBottom: 10 }} />
           <div style={{ marginTop: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginLeft: 10, fontSize: 18, fontWeight: 700 }}>
+              <Typography>선택한 멤버</Typography>
+              <Button
+                variant="contained"
+                style={{ marginLeft: 10 }}
+                onClick={() => setSelectedMembers([])}
+              >
+                명단 초기화
+              </Button>
+            </div>
+            <Divider style={{ margin: 10, marginLeft: 5, marginRight: 5 }} />
             {
               selectedMembers.map((member) => (
                 <Button
@@ -123,6 +183,7 @@ function App() {
           {
             selectedMembers.length === 10 && (
               <>
+                <Divider style={{ margin: 10, marginLeft: 5, marginRight: 5 }} />
                 <div style={{ marginTop: 10, textAlign: 'center' }}>
                   <Button
                     variant="contained"
