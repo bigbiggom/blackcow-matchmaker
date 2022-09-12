@@ -125,7 +125,7 @@ function App() {
                 style={{ marginLeft: 10 }}
                 onClick={() => setEditMode(!editMode)}
               >
-                수정
+                {editMode === true ? '저장' : '수정'}
               </Button>
             </div>
             <Divider style={{ margin: 10, marginLeft: 5, marginRight: 5 }} />
