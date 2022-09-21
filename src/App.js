@@ -71,16 +71,27 @@ function App() {
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [teamRedMembers, setTeamRedMembers] = useState([]);
   const [teamBlueMembers, setTeamBlueMembers] = useState([]);
-  const [teamRedBoss, setTeamRedBoss] = useState('');
-  const [teamBlueBoss, setTeamBlueBoss] = useState('');
+  const [teamRedBoss, setTeamRedBoss] = useState(null);
+  const [teamBlueBoss, setTeamBlueBoss] = useState(null);
   
   const [editMode, setEditMode] = useState(false);
   const [bossMode, setBossMode] = useState(false);
 
   const onClickMember = (member) => {
-    if (selectedMembers.length >= 10) { return; }
+    const limit = bossMode ? 8 : 10
+    if (selectedMembers.length >= limit) { return; }
 
-    if (selectedMembers.indexOf(member) < 0) {
+    if (bossMode) {
+      if (teamRedBoss === null) {
+        setTeamRedBoss(member);
+      } else if (teamBlueBoss === null) {
+        setTeamBlueBoss(member);
+      } else if (selectedMembers.indexOf(member) < 0) {
+        const newMembers = JSON.parse(JSON.stringify(selectedMembers));
+        newMembers.push(member);
+        setSelectedMembers(newMembers);
+      }
+    } else if (selectedMembers.indexOf(member) < 0) {
       const newMembers = JSON.parse(JSON.stringify(selectedMembers));
       newMembers.push(member);
       setSelectedMembers(newMembers);
@@ -233,6 +244,41 @@ function App() {
               ))
             }
           </div>
+          {
+            bossMode && (
+              <>
+                <Divider style={{ marginTop: 10, marginBottom: 10 }} />
+                <div style={{ marginTop: 10 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', marginLeft: 10, fontSize: 18, fontWeight: 700 }}>
+                    <Typography>선택한 팀장</Typography>
+                  </div>
+                  <Divider style={{ margin: 10, marginLeft: 5, marginRight: 5 }} />
+                  {
+                    teamRedBoss !== null && (
+                      <Button
+                        variant="outlined"
+                        style={{ margin: 5 }}
+                        onClick={() => setTeamRedBoss(null)}
+                      >
+                        {teamRedBoss}
+                      </Button>
+                    )
+                  }
+                  {
+                    teamBlueBoss !== null && (
+                      <Button
+                        variant="outlined"
+                        style={{ margin: 5 }}
+                        onClick={() => setTeamBlueBoss(null)}
+                      >
+                        {teamBlueBoss}
+                      </Button>
+                    )
+                  }
+                </div>
+              </>
+            )
+          }
           <Divider style={{ marginTop: 10, marginBottom: 10 }} />
           <div style={{ marginTop: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', marginLeft: 10, fontSize: 18, fontWeight: 700 }}>
@@ -278,7 +324,15 @@ function App() {
                   <div style={{ flexGrow: 1, textAlign: 'right' }}>
                     {
                       bossMode ? (
-                        <div style={{ color: '#ff0000', fontSize: 22 }}>team <input value={teamRedBoss} onChange={(e) => setTeamRedBoss(e.target.value)} /></div>
+                        <div style={{ color: '#ff0000', fontSize: 22 }}>
+                          team
+                          <Button
+                            variant="outlined"
+                            style={{ margin: 5 }}
+                          >
+                            {teamRedBoss}
+                          </Button>
+                        </div>
                       ) : (
                         <div style={{ color: '#ff0000', fontSize: 22 }}>team 1</div>
                       )
@@ -294,7 +348,15 @@ function App() {
                   <div style={{ flexGrow: 1 }}>
                     {
                       bossMode ? (
-                        <div style={{ color: '#0000ff', fontSize: 22 }}>team <input value={teamBlueBoss} onChange={(e) => setTeamBlueBoss(e.target.value)} /></div>
+                        <div style={{ color: '#0000ff', fontSize: 22 }}>
+                          team
+                          <Button
+                            variant="outlined"
+                            style={{ margin: 5 }}
+                          >
+                            {teamBlueBoss}
+                          </Button>
+                        </div>
                       ) : (
                         <div style={{ color: '#0000ff', fontSize: 22 }}>team 2</div>
                       )
