@@ -159,7 +159,7 @@ function App() {
         <RootPaper elevation={3}>
           <TextCenterDiv>
             <div style={{ paddingTop: 10 }}>
-              <img src="/images/logo.jpg" alt="로고 이미지" />
+              <img src="/images/main.gif" alt="로고 GIF" />
             </div>
             <Typography variant="h2">흑우단 매치메이커</Typography>
           </TextCenterDiv>
